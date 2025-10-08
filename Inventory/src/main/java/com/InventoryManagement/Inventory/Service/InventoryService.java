@@ -5,6 +5,7 @@ import com.InventoryManagement.Inventory.Entity.InventoryEntity;
 import com.InventoryManagement.Inventory.Repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -39,5 +40,10 @@ public class InventoryService {
     public Integer getQuantity(String id){
         InventoryEntity inventory = inventoryRepository.findById(id).orElseThrow(() -> new RuntimeException("No such Product exists with given ID"));
         return inventory.getQuantity();
+    }
+
+    public boolean validateQuantity(String id, Integer quantity){
+        InventoryEntity inventory = inventoryRepository.findById(id).orElseThrow(() -> new RuntimeException("No such Product exists with given ID"));
+        return inventory.getQuantity() >= quantity;
     }
 }

@@ -40,4 +40,11 @@ public class InventoryController {
     public Integer getQuantity(@RequestParam String id){
         return inventoryService.getQuantity(id);
     }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping("/validateQuantity")
+    public boolean validateQuantity(@RequestParam String id, @RequestParam Integer quantity){
+        return inventoryService.validateQuantity(id,quantity);
+    }
 }
