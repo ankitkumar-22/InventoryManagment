@@ -3,7 +3,7 @@
   <component name="CompilerConfiguration">
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
-      <profile name="Annotation profile for Order" enabled="true">
+      <profile name="Annotation profile for Inventory" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -13,8 +13,8 @@
         <module name="Order" />
         <module name="Product" />
         <module name="Supplier" />
-        <module name="Notification" />
         <module name="Inventory" />
+        <module name="Notification" />
       </profile>
     </annotationProcessing>
   </component>

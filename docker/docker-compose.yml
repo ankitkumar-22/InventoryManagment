@@ -2,22 +2,156 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
     container_name: zookeeper
-    ports:
-      - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - inventory-net
 
   kafka:
     image: confluentinc/cp-kafka:7.6.0
     container_name: kafka
-    ports:
-      - "9092:9092"
+    depends_on:
+      - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - inventory-net
+
+  mongodb:
+    image: mongo:7.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - inventory-net
+
+  eureka-server:
+    build:
+      context: ../EurekaServer
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - inventory-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  inventory:
+    build:
+      context: ../Inventory
+    container_name: inventory
     depends_on:
-      - zookeeper
+      eureka-server:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/inventory-service-v2
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    networks:
+      - inventory-net
+
+  product:
+    build:
+      context: ../Product
+    container_name: product
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/product-service-v2
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    networks:
+      - inventory-net
+
+  order:
+    build:
+      context: ../Order
+    container_name: order
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      kafka:
+        condition: service_started
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/order-service-v2
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    networks:
+      - inventory-net
+
+  supplier:
+    build:
+      context: ../Supplier
+    container_name: supplier
+    ports:
+      - "8085:8085"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/supplier-service-v2
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    networks:
+      - inventory-net
+
+  notification:
+    build:
+      context: ../Notification
+    container_name: notification
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      kafka:
+        condition: service_started
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/notification-service-v2
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    networks:
+      - inventory-net
+
+  api-gateway:
+    build:
+      context: ../ApiGateway
+    container_name: api-gateway
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      inventory:
+        condition: service_started
+      product:
+        condition: service_started
+      order:
+        condition: service_started
+      supplier:
+        condition: service_started
+      notification:
+        condition: service_started
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    ports:
+      - "8080:8080"
+    networks:
+      - inventory-net
+
+networks:
+  inventory-net:
+    driver: bridge

@@ -13,21 +13,18 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/order")
 public class OrderController {
     private final OrderService orderService;
-    @PostMapping
-    @RequestMapping("/placeOrder")
+    @PostMapping("/placeOrder")
     @ResponseStatus(HttpStatus.CREATED)
     public void placeOrder(@RequestBody OrderRequest orderRequest){
         orderService.placeOrder(orderRequest);
     }
 
-    @GetMapping
-    @RequestMapping("/getOrderDetailsById")
+    @GetMapping("/getOrderDetailsById")
     @ResponseStatus(HttpStatus.OK)
     public OrderResponse getOrderDetailsById(@RequestParam String id){
         return orderService.getOrderDetailsById(id);
     }
-    @DeleteMapping
-    @RequestMapping("/cancelOrder")
+    @DeleteMapping("/cancelOrder")
     @ResponseStatus(HttpStatus.OK)
     public void cancelOrder(@RequestParam String id){
         orderService.cancelOrder(id);

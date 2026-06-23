@@ -14,36 +14,31 @@ import org.springframework.web.bind.annotation.*;
 public class SupplierController {
     private final SupplierService supplierService;
 
-    @PostMapping
-    @RequestMapping("/addSupplier")
+    @PostMapping("/addSupplier")
     @ResponseStatus(HttpStatus.CREATED)
     public void addSupplier(@RequestBody SupplierRequest supplierRequest){
         supplierService.addSupplier(supplierRequest);
     }
 
-    @RequestMapping("/deleteSupplier")
-    @DeleteMapping
+    @DeleteMapping("/deleteSupplier")
     @ResponseStatus(HttpStatus.OK)
     public void deleteSupplier(@RequestParam String id){
         supplierService.deleteSupplier(id);
     }
 
-    @RequestMapping("/addProductBySupplier")
-    @PostMapping
+    @PostMapping("/addProductBySupplier")
     @ResponseStatus(HttpStatus.CREATED)
     public void addProductBySupplier(@RequestParam String id,@RequestBody ProductEntity productEntity){
         supplierService.addProductBySupplier(id,productEntity);
     }
 
-    @RequestMapping("/deleteProductBySupplier")
-    @DeleteMapping
+    @DeleteMapping("/deleteProductBySupplier")
     @ResponseStatus(HttpStatus.OK)
     public void deleteProductBySupplier(@RequestParam String supplierId,@RequestParam String productId){
         supplierService.deleteProductBySupplier(supplierId,productId);
     }
 
-    @RequestMapping("/updateQuantity")
-    @PostMapping
+    @PostMapping("/updateQuantity")
     @ResponseStatus(HttpStatus.OK)
     public void updateQuantity(@RequestParam String id, @RequestParam Integer quantity){
         supplierService.updateQuantity(id,quantity);

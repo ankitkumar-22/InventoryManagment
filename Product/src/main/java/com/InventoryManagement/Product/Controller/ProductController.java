@@ -16,17 +16,15 @@ public class ProductController {
     private final ProductService productService;
     private final InventoryClient inventoryClient;
 
-    @PostMapping
+    @PostMapping("/createProduct")
     @ResponseStatus(HttpStatus.CREATED)
-    @RequestMapping("/createProduct")
     public void createProduct(@RequestBody ProductRequest productRequest){
         productService.createProduct(productRequest);
         InventoryRequest inventoryRequest = new InventoryRequest(productRequest.id(),productRequest.name());
         inventoryClient.addProduct(inventoryRequest);
     }
 
-    @DeleteMapping
-    @RequestMapping("/deleteProduct")
+    @DeleteMapping("/deleteProduct")
     @ResponseStatus(HttpStatus.OK)
     public void deleteProduct(@RequestParam String id){
         productService.deleteProduct(id);

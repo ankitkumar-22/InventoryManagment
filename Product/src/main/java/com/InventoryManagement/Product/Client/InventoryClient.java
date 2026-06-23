@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(value = "inventory", url = "${inventory.url}")
+@FeignClient(name = "INVENTORY")
 public interface InventoryClient {
 
     @RequestMapping(method = RequestMethod.POST, value = "/api/inventory/addProduct")

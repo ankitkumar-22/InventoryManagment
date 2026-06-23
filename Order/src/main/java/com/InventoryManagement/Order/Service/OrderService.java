@@ -7,11 +7,9 @@ import com.InventoryManagement.Order.Entity.OrderEntity;
 import com.InventoryManagement.Order.Repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

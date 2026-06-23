@@ -13,37 +13,32 @@ import org.springframework.web.bind.annotation.*;
 public class InventoryController {
     private final InventoryService inventoryService;
 
-    @PostMapping
+    @PostMapping("/addProduct")
     @ResponseStatus(HttpStatus.CREATED)
-    @RequestMapping("/addProduct")
     public void addProduct(@RequestBody InventoryRequest inventoryRequest){
         inventoryService.addProduct(inventoryRequest);
     }
 
-    @PostMapping
+    @PostMapping("/updateQuantity")
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(("/updateQuantity"))
     public void updateQuantity(@RequestParam String id, @RequestParam Integer quantity){
         inventoryService.updateQuantity(id,quantity);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/deleteProduct")
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping("/deleteProduct")
     public void deleteProduct(@RequestParam String id){
         inventoryService.deleteProduct(id);
     }
 
-    @GetMapping
+    @GetMapping("/getQuantity")
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping("/getQuantity")
     public Integer getQuantity(@RequestParam String id){
         return inventoryService.getQuantity(id);
     }
 
-    @GetMapping
+    @GetMapping("/validateQuantity")
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping("/validateQuantity")
     public boolean validateQuantity(@RequestParam String id, @RequestParam Integer quantity){
         return inventoryService.validateQuantity(id,quantity);
     }
